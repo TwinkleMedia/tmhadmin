@@ -201,7 +201,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <?php
     include './sidenavbar.php'
-    ?> <div class="form-container">
+    ?> 
+    <div class="form-container">
         <h2>Influencer Form</h2>
         <form method="POST" enctype="multipart/form-data">
             <div class="form-group">
