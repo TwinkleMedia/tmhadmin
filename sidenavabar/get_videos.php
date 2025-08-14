@@ -1,8 +1,9 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Content-Type: application/json');
-// ...existing code...
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
 // Database config
 $servername = "localhost";
 $username   = "root"; 
@@ -16,9 +17,26 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Fetch videos
-$sql = "SELECT id, thumbnail_url AS thumbnail, video_url AS videoUrl FROM videos ORDER BY uploaded_at DESC";
-$result = $conn->query($sql);
+// Get category from query parameter, default to null (all videos)
+$category = isset($_GET['category']) ? $_GET['category'] : null;
+
+// Build SQL query based on category
+if ($category) {
+    $sql = "SELECT id, thumbnail_url AS thumbnail, video_url AS videoUrl, category 
+            FROM videos 
+            WHERE category = ? 
+            ORDER BY uploaded_at DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $category);
+    $stmt->execute();
+    $result = $stmt->get_result();
+} else {
+    // If no category specified, fetch all videos
+    $sql = "SELECT id, thumbnail_url AS thumbnail, video_url AS videoUrl, category 
+            FROM videos 
+            ORDER BY uploaded_at DESC";
+    $result = $conn->query($sql);
+}
 
 $videos = [];
 if ($result && $result->num_rows > 0) {
@@ -28,4 +46,10 @@ if ($result && $result->num_rows > 0) {
 }
 
 echo json_encode($videos);
+
+// Close prepared statement if it exists
+if (isset($stmt)) {
+    $stmt->close();
+}
 $conn->close();
+?>
