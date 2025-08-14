@@ -1,18 +1,7 @@
 <?php
-// Database Config
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "twinkleadmin"; // Change to your DB name
+set_time_limit(300);
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Database Connection Failed: " . $conn->connect_error);
-}
-
-// Cloudinary Config
 require 'vendor/autoload.php';
-
 use Cloudinary\Cloudinary;
 
 $cloudinary = new Cloudinary([
@@ -20,37 +9,41 @@ $cloudinary = new Cloudinary([
         'cloud_name' => 'dh9dpvul4',
         'api_key'    => '913163688842134',
         'api_secret' => 'FR5RjEj7it70xfBMnT53mgW-uds',
-    ]
+    ],
+    'url' => ['secure' => true]
 ]);
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Database connection
+$conn = new mysqli("localhost", "root", "", "twinkleadmin");
+if ($conn->connect_error) {
+    die("Database connection failed: " . $conn->connect_error);
+}
+
+// Form handling
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['client_logo'])) {
     $clientName = $conn->real_escape_string($_POST['client_name']);
+    $fileTmpPath = $_FILES['client_logo']['tmp_name'];
 
-    if (isset($_FILES['client_logo']) && $_FILES['client_logo']['error'] == 0) {
-        $fileTmpPath = $_FILES['client_logo']['tmp_name'];
-
+    try {
         // Upload to Cloudinary
-        try {
-            $uploadResult = $cloudinary->uploadApi()->upload($fileTmpPath, [
-                'folder' => 'TMH_Website/client_logos'
-            ]);
+        $uploadResult = $cloudinary->uploadApi()->upload($fileTmpPath, [
+            "folder" => "client_logos"
+        ]);
 
-            $imageUrl = $uploadResult['secure_url'];
+        // Extract URL and Public ID
+        $logoUrl   = $uploadResult['secure_url'];
+        $publicId  = $uploadResult['public_id'];
 
-            // Save to DB
-            $sql = "INSERT INTO client_logos (client_name, logo_url) VALUES ('$clientName', '$imageUrl')";
-            if ($conn->query($sql) === TRUE) {
-                echo "Client logo uploaded successfully!<br>";
-                echo "<img src='$imageUrl' width='150'><br>";
-                echo "<a href='admin_client_logo_form.html'>Upload Another</a>";
-            } else {
-                echo "Database Error: " . $conn->error;
-            }
-        } catch (Exception $e) {
-            echo "Cloudinary Upload Failed: " . $e->getMessage();
-        }
-    } else {
-        echo "Please select a valid image file.";
+        // Save to DB
+        $stmt = $conn->prepare("INSERT INTO client_logos (client_name, logo_url, cloudinary_public_id) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $clientName, $logoUrl, $publicId);
+        $stmt->execute();
+
+        header("Location: clientlogo.php");
+        exit();
+
+    } catch (Exception $e) {
+        echo "Upload error: " . $e->getMessage();
     }
 }
 ?>

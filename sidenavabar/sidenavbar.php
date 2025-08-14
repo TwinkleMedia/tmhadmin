@@ -64,8 +64,8 @@
                 <span class="nav-text">Upload Team</span>
             </a>
 
-             <a href="./sidenavabar/clientlogo.php">
-            <i class="fa-solid fa-user-group"></i>
+            <a href="../../tmhadmin/sidenavabar/clientlogo.php">
+                <i class="fa-solid fa-user-group"></i>
                 <span class="nav-text">Upload  Client Logo</span>
             </a>
         </div>

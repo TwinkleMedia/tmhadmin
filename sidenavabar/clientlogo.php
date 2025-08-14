@@ -1,47 +1,60 @@
 <?php
-require 'vendor/autoload.php'; // Cloudinary SDK
-// Connect to DB
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "twinkleadmin";
-$conn = new mysqli($servername, $username, $password, $dbname);
+set_time_limit(300);
+
+require 'vendor/autoload.php';
+use Cloudinary\Cloudinary;
+
+// Cloudinary config
+$cloudinary = new Cloudinary([
+    'cloud' => [
+        'cloud_name' => 'dh9dpvul4',
+        'api_key'    => '913163688842134',
+        'api_secret' => 'FR5RjEj7it70xfBMnT53mgW-uds',
+    ],
+    'url' => ['secure' => true]
+]);
+
+// DB connection
+$conn = new mysqli("localhost", "root", "", "twinkleadmin");
 if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
 }
 
-// Handle delete
+// DELETE logo
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
-    $res = $conn->query("DELETE FROM `client_logos`  WHERE id=$id");
-    if ($res && $res->num_rows > 0) {
-        $row = $res->fetch_assoc();
 
-        $cloudinary = new Cloudinary\Cloudinary([
-            'cloud' => [
-                'cloud_name' => 'dh9dpvul4',
-        'api_key'    => '913163688842134',
-        'api_secret' => 'FR5RjEj7it70xfBMnT53mgW-uds',
-            ]
-        ]);
-        $cloudinary->uploadApi()->destroy($row['cloudinary_public_id']);
+    // 1. Get public_id from DB
+    $result = $conn->query("SELECT cloudinary_public_id FROM client_logos WHERE id=$id");
 
-        $conn->query("DELETE FROM client_logos WHERE id=$id");
+    if ($row = $result->fetch_assoc()) {
+        $logoPublicId = $row['cloudinary_public_id'];
+
+        try {
+            // 2. Delete from Cloudinary
+            if (!empty($logoPublicId)) {
+                $cloudinary->uploadApi()->destroy($logoPublicId, [
+                    "resource_type" => "image",
+                    "invalidate" => true
+                ]);
+            }
+
+            // 3. Delete from DB
+            $conn->query("DELETE FROM client_logos WHERE id=$id");
+
+        } catch (Exception $e) {
+            echo "Cloudinary delete error: " . $e->getMessage();
+            exit();
+        }
     }
+
+    // Redirect back
     header("Location: clientlogo.php");
-    exit;
+    exit();
 }
-
-// Fetch logos
-$logos = [];
-$result = $conn->query("SELECT id, client_name, logo_url FROM client_logos ORDER BY id DESC");
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $logos[] = $row;
-    }
-}
-$conn->close();
 ?>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -65,7 +78,7 @@ $conn->close();
 <body>
 
 <h2>Upload Client Logo</h2>
-<form method="POST" enctype="multipart/form-data" action="uploadlogo.php">
+<form method="POST" enctype="multipart/form-data" action="upload_logo.php">
     <label>Client Name:</label>
     <input type="text" name="client_name" required>
     <label>Client Logo:</label>
@@ -91,6 +104,38 @@ $conn->close();
         ?>
     </div>
 </div>
+<h2 style="text-align:center;">Uploaded Client Logos</h2>
+<table border="1" cellpadding="10" cellspacing="0" style="width:100%; border-collapse: collapse; background: #fff;">
+    <thead>
+        <tr style="background:#f2f2f2;">
+            <th>ID</th>
+            <th>Client Name</th>
+            <th>Logo</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $result = $conn->query("SELECT id, client_name, logo_url FROM client_logos ORDER BY id DESC");
+        if ($result && $result->num_rows > 0):
+            while ($row = $result->fetch_assoc()):
+        ?>
+        <tr>
+            <td><?= $row['id'] ?></td>
+            <td><?= htmlspecialchars($row['client_name']) ?></td>
+            <td><img src="<?= $row['logo_url'] ?>" width="100" style="border-radius:5px;"></td>
+            <td>
+                <form action="" method="GET" onsubmit="return confirm('Are you sure you want to delete this logo?');" style="display:inline;">
+                    <input type="hidden" name="delete" value="<?= $row['id'] ?>">
+                    <button type="submit" class="delete-btn" style="background:#dc3545;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;">Delete</button>
+                </form>
+            </td>
+        </tr>
+        <?php endwhile; else: ?>
+        <tr><td colspan="4">No logos uploaded yet.</td></tr>
+        <?php endif; ?>
+    </tbody>
+</table>
 
 </body>
 </html>

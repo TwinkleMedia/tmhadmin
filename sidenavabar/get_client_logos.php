@@ -2,7 +2,6 @@
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 
-
 // Database connection
 $servername = "localhost";
 $username   = "root";
@@ -14,7 +13,10 @@ if ($conn->connect_error) {
     die(json_encode(["error" => "Database connection failed"]));
 }
 
-$sql = "SELECT id, logo_url AS image FROM client_logos ORDER BY uploaded_at DESC";
+// Fetch id, logo_url, and cloudinary_public_id
+$sql = "SELECT id, logo_url AS image, cloudinary_public_id 
+        FROM client_logos 
+        ORDER BY uploaded_at DESC";
 $result = $conn->query($sql);
 
 $logos = [];
