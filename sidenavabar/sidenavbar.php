@@ -37,6 +37,10 @@
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload work video</span>
             </a>
+   <a href="./clienttestmonial.php">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span class="nav-text">Upload Client Testmonial </span>
+            </a>
 
             <a href="./creative.php">
                 <i class="fas fa-cloud-upload-alt"></i>
