@@ -67,7 +67,7 @@ if (isset($_GET['delete'])) {
 
             // Delete thumbnail
             if ($thumbPublicId) {
-                $resThumb = $cloudinary->uploadApi()->destroy($thumbPublicId, [
+                $resThumb = $cloudinary->uploadApi( )->destroy($thumbPublicId, [
                     "resource_type" => "image",
                     "invalidate" => true
                 ]);
