@@ -1,59 +1,32 @@
 <?php
-
-
 set_time_limit(300);
 require 'vendor/autoload.php';
-
 use Cloudinary\Cloudinary;
 
-// Helper function to get public_id from Cloudinary URL
 function getPublicId($url) {
-    $path = parse_url($url, PHP_URL_PATH);
-
-    // Example path: /tmh_website/thumbnails/sample.jpg  OR  /image/upload/v1234567890/tmh_website/thumbnails/sample.jpg
-    // Remove the leading `/`
-    $path = ltrim($path, '/');
-
-    // Remove the first segment if it's "image/upload" or "video/upload"
+    $path = ltrim(parse_url($url, PHP_URL_PATH), '/');
     $path = preg_replace('#^(image|video)/upload/#', '', $path);
-
-    // Remove version numbers like v1234567890/
     $path = preg_replace('#v[0-9]+/#', '', $path);
-
-    // Remove file extension (.jpg, .mp4, etc.)
-    $path = preg_replace('/\.[^.]+$/', '', $path);
-
-    return $path;
+    return preg_replace('/\.[^.]+$/', '', $path);
 }
 
-
-// ==== CONFIGURE CLOUDINARY ====
 $cloudinary = new Cloudinary([
     'cloud' => [
         'cloud_name' => 'dh9dpvul4',
         'api_key'    => '913163688842134',
         'api_secret' => 'FR5RjEj7it70xfBMnT53mgW-uds',
     ],
-    'url' => [
-        'secure' => true
-    ]
+    'url' => ['secure' => true]
 ]);
 
-// ==== DATABASE CONFIG ====
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "twinkleadmin";
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-
+$conn = new mysqli("localhost", "root", "", "twinkleadmin");
 if ($conn->connect_error) {
     http_response_code(500);
     echo "Database connection failed";
     exit();
 }
 
-// ===== DELETE VIDEO =====
+// ===== DELETE VIDEO ==
 
 // ...existing code...
 if (isset($_GET['delete'])) {
@@ -67,7 +40,7 @@ if (isset($_GET['delete'])) {
 
             // Delete thumbnail
             if ($thumbPublicId) {
-                $resThumb = $cloudinary->uploadApi( )->destroy($thumbPublicId, [
+                $resThumb = $cloudinary->uploadApi()->destroy($thumbPublicId, [
                     "resource_type" => "image",
                     "invalidate" => true
                 ]);
@@ -104,6 +77,15 @@ if (isset($_GET['delete'])) {
 // ==== PROCESS FORM ====
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
+    $category = $_POST['category'];
+
+    // Check file sizes
+    if ($_FILES['thumbnail']['size'] > 10 * 1024 * 1024) {
+        die("Thumbnail size exceeds 10MB limit.");
+    }
+    if ($_FILES['video']['size'] > 100 * 1024 * 1024) {
+        die("Video size exceeds 100MB limit.");
+    }
 
     try {
         // Upload Thumbnail
@@ -120,21 +102,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         $video_url = $videoUpload['secure_url'];
 
-        // Save URLs to database
-        $stmt = $conn->prepare("INSERT INTO videos (title, thumbnail_url, video_url) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $title, $thumbnail_url, $video_url);
+        // Save to database
+        $stmt = $conn->prepare("INSERT INTO videos (title, category, thumbnail_url, video_url) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $title, $category, $thumbnail_url, $video_url);
 
         if ($stmt->execute()) {
-            echo "success";
+            echo "<script>
+                    alert('Video uploaded successfully!');
+                    window.location.href = 'work.php';
+                  </script>";
         } else {
-            http_response_code(500);
-            echo "Error saving to database: " . $stmt->error;
+            echo "Database error: " . $stmt->error;
         }
-
         $stmt->close();
 
     } catch (Exception $e) {
-        http_response_code(500);
         echo "Upload failed: " . $e->getMessage();
     }
 }

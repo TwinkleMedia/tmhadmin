@@ -1,0 +1,107 @@
+<?php
+
+// Connect to database
+$servername = "localhost";
+$username   = "root";
+$password   = "";
+$dbname     = "twinkleadmin";
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+    die("Database connection failed: " . $conn->connect_error);
+}
+$videos = [];
+$result = $conn->query("SELECT id, title, thumbnail_url, video_url FROM videos ORDER BY uploaded_at DESC");
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $videos[] = $row;
+    }
+}
+$conn->close();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Video Uploads</title>
+    <style>
+        body { font-family: Arial; background: #f7f9fc; padding: 20px; }
+        h2 { text-align: center; }
+        form { background: #fff; padding: 20px; max-width: 500px; margin: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, button { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #28a745; color: white; font-size: 16px; cursor: pointer; border: none; margin-top: 15px; }
+        button:hover { background: #218838; }
+        .progress-container { background: #ddd; border-radius: 20px; overflow: hidden; margin-top: 10px; }
+        .progress-bar { height: 25px; background: #4caf50; width: 0%; color: white; text-align: center; line-height: 25px; }
+        .gallery { margin-top: 40px; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .video-card { background: #fff; padding: 10px; border-radius: 8px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+        .video-card img, video { width: 100%; border-radius: 8px; }
+        .delete-btn { background: #dc3545; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px; }
+        .delete-btn:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+
+<h2>Upload Video</h2>
+<form id="uploadForm" method="POST" enctype="multipart/form-data">
+    <label>Video Title:</label>
+    <input type="text" name="title" required>
+    <label>Thumbnail: upto 10MB</label>
+    <input type="file" name="thumbnail" accept="image/*" required>
+    <label>Video File: upto 100MB</label>
+    <input type="file" name="video" accept="video/mp4" required>
+    <button type="submit">Upload</button>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar">0%</div>
+    </div>
+</form>
+
+<div class="gallery">
+    <h2>All Uploaded Videos</h2>
+    <div class="video-grid">
+        <?php
+        if (!empty($videos)) {
+            foreach ($videos as $vid) {
+                echo '<div class="video-card">';
+                echo '<img src="' . $vid['thumbnail_url'] . '" alt="Thumbnail">';
+                echo '<p>' . htmlspecialchars($vid['title']) . '</p>';
+                echo '<video controls>
+                        <source src="' . $vid['video_url'] . '" type="video/mp4">
+                      </video>';
+                echo '<a class="delete-btn" href="uploadvideo.php?delete=' . $vid['id'] . '" onclick="return confirm(\'Are you sure?\')">Delete</a>';
+                echo '</div>';
+            }
+        } else {
+            echo "<p>No videos uploaded yet.</p>";
+        }
+        ?>
+    </div>
+</div>
+
+<script>
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let formData = new FormData(this);
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', 'uploadvideo.php', true);
+
+    xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) {
+            let percent = Math.round((e.loaded / e.total) * 100);
+            let bar = document.getElementById('progressBar');
+            bar.style.width = percent + '%';
+            bar.textContent = percent + '%';
+        }
+    };
+
+    xhr.onload = function() {
+        if (xhr.status === 200 && xhr.responseText.trim() === "success") {
+            location.reload();
+        } else {
+            alert("Error: " + xhr.responseText);
+        }
+    };
+    xhr.send(formData);
+});
+</script>
