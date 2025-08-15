@@ -57,164 +57,19 @@ if (isset($_GET['delete'])) {
 <head>
     <title>Manage Client Logos</title>
     <style>
-       body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    margin-left: 250px; /* adjust for sidebar if needed */
-    padding: 20px;
-}
-
-.form-container {
-    width: 100%;
-    max-width: 600px;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-}
-
-.form-container h2 {
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.form-group input[type="text"],
-.form-group input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.form-group button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    font-size: 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.form-group button:hover {
-    background-color: #0056b3;
-}
-
-.gallery {
-    width: 100%;
-    max-width: 90%;
-    margin: 0 auto 30px;
-}
-
-.logo-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 20px;
-}
-
-.logo-card {
-    background: #fff;
-    padding: 10px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.logo-card img {
-    max-width: 100%;
-    max-height: 120px;
-    object-fit: contain;
-    border-radius: 4px;
-}
-
-.delete-btn {
-    background-color: #dc3545;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 8px;
-    border: none;
-    cursor: pointer;
-}
-
-.delete-btn:hover {
-    background-color: #c82333;
-}
-
-.table-container {
-    width: 100%;
-    max-width: 90%;
-    overflow-x: auto;
-    margin: 0 auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-table th,
-table td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid #ddd;
-}
-
-table th {
-    background-color: #007bff;
-    color: white;
-}
-
-table td img {
-    max-width: 100px;
-    height: auto;
-    border-radius: 4px;
-}
-
-@media (max-width: 768px) {
-    .container {
-        margin-left: 0;
-        padding: 10px;
-    }
-
-    .form-container {
-        width: 90%;
-    }
-
-    .gallery, .table-container {
-        max-width: 100%;
-    }
-}
-
+        body { font-family: Arial; background: #f7f9fc; padding: 20px; }
+        h2 { text-align: center; }
+        form { background: #fff; padding: 20px; max-width: 500px; margin: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, button { width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #007BFF; color: white; font-size: 16px; cursor: pointer; border: none; margin-top: 15px; }
+        button:hover { background: #0056b3; }
+        .gallery { margin-top: 40px; }
+        .logo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .logo-card { background: #fff; padding: 10px; border-radius: 8px; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.08); }
+        .logo-card img { max-width: 100%; max-height: 120px; border-radius: 8px; object-fit: contain; }
+        .delete-btn { background: #dc3545; color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; display: inline-block; margin-top: 8px; }
+        .delete-btn:hover { background: #c82333; }
     </style>
 </head>
 <body>
