@@ -15,10 +15,7 @@ $cloudinary = new Cloudinary([
 ]);
 
 // DB connection
-$conn = new mysqli("localhost", "root", "", "twinkleadmin");
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
-}
+include './db.php'; // Ensure this file contains the correct DB connection code
 
 // DELETE logo
 if (isset($_GET['delete'])) {
