@@ -42,7 +42,7 @@
                 <span class="nav-text">Upload Client Testmonial </span>
             </a>
 
-            <a href="./creative.php">
+            <a href="creative.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Creative Section </span>
             </a>
