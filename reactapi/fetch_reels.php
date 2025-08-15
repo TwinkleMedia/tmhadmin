@@ -9,13 +9,7 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
 // Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "twinkleadmin";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+include './sidenavabar/db.php';
 
 // Check connection
 if ($conn->connect_error) {

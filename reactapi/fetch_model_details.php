@@ -5,13 +5,10 @@ header('Access-Control-Allow-Methods: GET, POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
 // Database configuration
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "twinkleadmin";
+include './sidenavabar/db.php';
 
 // Create connection
-$conn = new mysqli($host, $username, $password, $database);
+
 
 // Check connection
 if ($conn->connect_error) {

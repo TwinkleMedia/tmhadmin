@@ -4,13 +4,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 header('Access-Control-Allow-Headers: Content-Type');
 // Database configuration
-$host = 'localhost';
-$db = 'twinkleadmin';
-$user = 'root';
-$pass = '';
-
-// Connect to the database
-$conn = new mysqli($host, $user, $pass, $db);
+include './sidenavabar/db.php';
 
 if ($conn->connect_error) {
     die(json_encode(['status' => 'error', 'message' => 'Connection failed: ' . $conn->connect_error]));
