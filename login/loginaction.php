@@ -1,9 +1,9 @@
 <?php
 // Database Connection
 $host = 'localhost';
-$dbname = 'twinkleadmin';
-$username = 'root'; // Update as needed
-$password = '';
+$dbname = 'u694280384_twinkleadmin';
+$username = 'u694280384_twinkleadmin'; // Update as needed
+$password = 'Deep@0118';
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
