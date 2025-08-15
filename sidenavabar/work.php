@@ -229,7 +229,7 @@ if (isset($_GET['debug'])) {
    <?php 
     include './sidenavbar.php'
     ?>
-<a href="?debug=1" class="debug-link">Debug Mode</a>
+<!-- <a href="?debug=1" class="debug-link">Debug Mode</a> -->
 
 <h2 style="text-align:center;">Upload Video</h2>
 <form action="" method="POST" enctype="multipart/form-data">
