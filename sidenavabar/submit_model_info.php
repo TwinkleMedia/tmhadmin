@@ -1,12 +1,6 @@
 <?php
 // Database configuration
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "twinkleadmin";
-
-// Create connection
-$conn = new mysqli($host, $username, $password, $database);
+include './db.php'; 
 
 // Check connection
 if ($conn->connect_error) {

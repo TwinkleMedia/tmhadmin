@@ -2,12 +2,7 @@
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "twinkleadmin";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
+include './db.php'; 
 
 if ($conn->connect_error) {
     echo json_encode(["error" => "Database connection failed"]);

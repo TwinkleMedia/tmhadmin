@@ -2,15 +2,15 @@
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 
-// Database connection
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "twinkleadmin";
+include './db.php'; // Make sure this file defines $conn
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Check DB connection
 if ($conn->connect_error) {
-    die(json_encode(["error" => "Database connection failed"]));
+    echo json_encode([
+        "status" => "error",
+        "message" => "Database connection failed: " . $conn->connect_error
+    ]);
+    exit;
 }
 
 // Fetch id, logo_url, and cloudinary_public_id

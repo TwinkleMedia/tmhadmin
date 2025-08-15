@@ -3,12 +3,9 @@ require 'vendor/autoload.php'; // Cloudinary SDK autoload
 use Cloudinary\Cloudinary;
 
 // Database connection
-$servername = "localhost";
-$username   = "root";
-$password   = "";
-$dbname     = "twinkleadmin";
+include './db.php'; 
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Check DB connection
 if ($conn->connect_error) {
     die("Database connection failed: " . $conn->connect_error);
 }

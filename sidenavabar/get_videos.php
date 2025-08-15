@@ -5,13 +5,7 @@ header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
 // Database config
-$servername = "localhost";
-$username   = "root"; 
-$password   = "";     
-$dbname     = "twinkleadmin";
-
-// Connect to database
-$conn = new mysqli($servername, $username, $password, $dbname);
+include './db.php'; 
 if ($conn->connect_error) {
     echo json_encode(["error" => "Database connection failed"]);
     exit();
