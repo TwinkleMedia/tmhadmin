@@ -327,11 +327,7 @@
                 <tbody>
                     <?php
                     // Database connection
-                    $conn = new mysqli("localhost", "root", "", "twinkleadmin");
-
-                    if ($conn->connect_error) {
-                        die("Connection failed: " . $conn->connect_error);
-                    }
+                 include './db.php'; // Ensure this file contains the correct database connection code
 
                     // Handle deletion
                     if (isset($_POST['delete'])) {
