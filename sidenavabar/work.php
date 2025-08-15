@@ -86,7 +86,7 @@ $cloudinary = new Cloudinary([
 ]);
 
 // DB connection
-$conn = new mysqli("localhost", "root", "", "twinkleadmin");
+include './db.php'; // Ensure this file contains your database connection logic
 if ($conn->connect_error) {
     die("Database connection failed");
 }
