@@ -28,7 +28,7 @@
 
 
 
-            <a href="./sidenavabar/slider.php">
+            <a href="./uploadslider.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Slider</span>
             </a>
@@ -42,33 +42,33 @@
                 <span class="nav-text">Upload Client Testmonial </span>
             </a>
 
-            <a href="creative.php">
+            <a href="./creative.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Creative Section </span>
             </a>
 
-            <a href="./sidenavabar/uploadreel.php">
+            <a href="./uploadreel.php">
                 <i class="fas fa-video"></i>
                 <span class="nav-text">Upload Reels</span>
             </a>
-            <a href="../../twinkleadmin/sidenavabar/uploadstaff.php">
+            <a href="./uploadstaff.php">
                 <i class="fas fa-users"></i>
                 <span class="nav-text">Upload Staff</span>
             </a>
-            <a href="../../twinkleadmin/sidenavabar/uploadmodel.php">
+            <a href="./uploadmodel.php">
                 <i class="fa-solid fa-person"></i>
                 <span class="nav-text">Upload Model</span>
             </a>
-            <a href="../../twinkleadmin/sidenavabar/uploadinfluencer.php">
+            <a href="./uploadinfluencer.php">
                 <i class="fa-solid fa-person"></i>
                 <span class="nav-text">Upload influencer</span>
             </a>
-            <a href="../../twinkleadmin/sidenavabar/uploadteam.php">
+            <a href="./uploadteam.php">
                 <i class="fa-solid fa-user-group"></i>
                 <span class="nav-text">Upload Team</span>
             </a>
 
-            <a href="../../tmhadmin/sidenavabar/clientlogo.php">
+            <a href="./clientlogo.php">
                 <i class="fa-solid fa-user-group"></i>
                 <span class="nav-text">Upload  Client Logo</span>
             </a>
