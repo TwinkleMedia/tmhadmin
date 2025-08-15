@@ -73,7 +73,9 @@ if (isset($_GET['delete'])) {
     </style>
 </head>
 <body>
-
+<?php 
+    include './sidenavbar.php'
+    ?>
 <h2>Upload Client Logo</h2>
 <form method="POST" enctype="multipart/form-data" action="upload_logo.php">
     <label>Client Name:</label>
