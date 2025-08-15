@@ -16,7 +16,7 @@ Configuration::instance([
 ]);
 
 // DB connection
-$conn = new mysqli("localhost", "root", "", "twinkleadmin");
+include 'db.php'; // Include your database configuration file
 if ($conn->connect_error) {
     die("DB Connection Failed: " . $conn->connect_error);
 }
