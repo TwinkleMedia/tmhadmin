@@ -28,10 +28,10 @@
 
 
 
-            <a href="./uploadslider.php">
+            <!-- <a href="./">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Slider</span>
-            </a>
+            </a> -->
 
             <a href="./work.php">
                 <i class="fas fa-cloud-upload-alt"></i>
@@ -51,6 +51,11 @@
                 <i class="fas fa-video"></i>
                 <span class="nav-text">Upload Reels</span>
             </a>
+    <a href="./clientlogo.php">
+                <i class="fa-solid fa-user-group"></i>
+                <span class="nav-text">Upload  Client Logo</span>
+            </a>
+
             <a href="./uploadstaff.php">
                 <i class="fas fa-users"></i>
                 <span class="nav-text">Upload Staff</span>
@@ -68,10 +73,7 @@
                 <span class="nav-text">Upload Team</span>
             </a>
 
-            <a href="./clientlogo.php">
-                <i class="fa-solid fa-user-group"></i>
-                <span class="nav-text">Upload  Client Logo</span>
-            </a>
+        
         </div>
     </nav>
 
