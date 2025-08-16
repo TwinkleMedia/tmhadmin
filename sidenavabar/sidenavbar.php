@@ -33,42 +33,42 @@
                 <span class="nav-text">Upload Slider</span>
             </a> -->
 
-            <a href="./work.php">
+            <a href="/sidenavabar/work.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload work video</span>
             </a>
-   <a href="./clienttestmonial.php">
+   <a href="/sidenavabar/clienttestmonial.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Client Testmonial </span>
             </a>
 
-            <a href="./creative.php">
+            <a href="/sidenavabar/creative.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Creative Section </span>
             </a>
 
-            <a href="./uploadreel.php">
+            <a href="/sidenavabar/uploadreel.php">
                 <i class="fas fa-video"></i>
                 <span class="nav-text">Upload Reels</span>
             </a>
-    <a href="./clientlogo.php">
+    <a href="/sidenavabar/clientlogo.php">
                 <i class="fa-solid fa-user-group"></i>
                 <span class="nav-text">Upload  Client Logo</span>
             </a>
 
-            <a href="./uploadstaff.php">
+            <a href="/sidenavabar/uploadstaff.php">
                 <i class="fas fa-users"></i>
                 <span class="nav-text">Upload Staff</span>
             </a>
-            <a href="./uploadmodel.php">
+            <a href="/sidenavabar/uploadmodel.php">
                 <i class="fa-solid fa-person"></i>
                 <span class="nav-text">Upload Model</span>
             </a>
-            <a href="./uploadinfluencer.php">
+            <a href="/sidenavabar/uploadinfluencer.php">
                 <i class="fa-solid fa-person"></i>
                 <span class="nav-text">Upload influencer</span>
             </a>
-            <a href="./uploadteam.php">
+            <a href="/sidenavabar/uploadteam.php">
                 <i class="fa-solid fa-user-group"></i>
                 <span class="nav-text">Upload Team</span>
             </a>
