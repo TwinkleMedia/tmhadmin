@@ -33,7 +33,7 @@
                 <span class="nav-text">Upload Slider</span>
             </a> -->
 
-            <a href="./work.php">
+            <a href="/sidenavabar/work.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload work video</span>
             </a>
