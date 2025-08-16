@@ -37,38 +37,38 @@
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload work video</span>
             </a>
-   <a href="/sidenavabar/clienttestmonial.php">
+   <a href="/admin/sidenavabar/clienttestmonial.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Client Testmonial </span>
             </a>
 
-            <a href="/sidenavabar/creative.php">
+            <a href="/admin/sidenavabar/creative.php">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span class="nav-text">Upload Creative Section </span>
             </a>
 
-            <a href="/sidenavabar/uploadreel.php">
+            <a href="/admin/sidenavabar/uploadreel.php">
                 <i class="fas fa-video"></i>
                 <span class="nav-text">Upload Reels</span>
             </a>
-    <a href="/sidenavabar/clientlogo.php">
+    <a href="/admin/sidenavabar/clientlogo.php">
                 <i class="fa-solid fa-user-group"></i>
                 <span class="nav-text">Upload  Client Logo</span>
             </a>
 
-            <a href="/sidenavabar/uploadstaff.php">
+            <a href="/admin/sidenavabar/uploadstaff.php">
                 <i class="fas fa-users"></i>
                 <span class="nav-text">Upload Staff</span>
             </a>
-            <a href="/sidenavabar/uploadmodel.php">
+            <a href="/admin/sidenavabar/uploadmodel.php">
                 <i class="fa-solid fa-person"></i>
                 <span class="nav-text">Upload Model</span>
             </a>
-            <a href="/sidenavabar/uploadinfluencer.php">
+            <a href="/admin/sidenavabar/uploadinfluencer.php">
                 <i class="fa-solid fa-person"></i>
                 <span class="nav-text">Upload influencer</span>
             </a>
-            <a href="/sidenavabar/uploadteam.php">
+            <a href="/admin/sidenavabar/uploadteam.php">
                 <i class="fa-solid fa-user-group"></i>
                 <span class="nav-text">Upload Team</span>
             </a>
