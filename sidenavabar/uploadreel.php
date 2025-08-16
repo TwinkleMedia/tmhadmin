@@ -379,13 +379,7 @@
 
     <?php
     if (isset($_POST['submit'])) {
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "twinkleadmin";
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
+        include './db.php'; // Ensure this file contains the correct database connection code
 
         // Check connection
         if ($conn->connect_error) {
