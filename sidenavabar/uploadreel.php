@@ -571,8 +571,8 @@ function deleteFromCloudinary($publicId) {
 </head>
 <body>
   <?php
-    // Uncomment the line below if you have a side navigation
-    // include './sidenavbar.php';
+    
+include './sidenavbar.php';
   ?>
   
   <div class="container">
