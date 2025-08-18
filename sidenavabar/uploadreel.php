@@ -312,8 +312,8 @@
   </style>
 </head>
 <body>
-    <?php 
-    include 'config.php'
+      <?php
+    include './sidenavbar.php';
     ?>
   <div class="container">
     <!-- Upload Form -->
