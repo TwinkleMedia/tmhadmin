@@ -33,7 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
                 $filePath = $_FILES['images']['tmp_name'][$key];
                 $uploadResult = $cloudinary->uploadApi()->upload($filePath, [
-                    'folder' => 'models/images'
+                    'folder' => 'new_models/images'
                 ]);
                 $imageUrls[] = $uploadResult['secure_url'];
             }
@@ -47,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $filePath = $_FILES['videos']['tmp_name'][$key];
                 $uploadResult = $cloudinary->uploadApi()->upload($filePath, [
                     'resource_type' => 'video',
-                    'folder' => 'models/videos'
+                    'folder' => 'new_models/videos'
                 ]);
                 $videoUrls[] = $uploadResult['secure_url'];
             }
@@ -60,14 +60,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $filePath = $_FILES['pdf']['tmp_name'];
             $uploadResult = $cloudinary->uploadApi()->upload($filePath, [
                 'resource_type' => 'raw',
-                'folder' => 'models/pdf'
+                'folder' => 'new_models/pdf'
             ]);
             $pdfUrl = $uploadResult['secure_url'];
         }
     }
 
     // ---------- Save in Database ----------
-    $sql = "INSERT INTO models (model_name, gender, age, images, videos, pdf_url) 
+    $sql = "INSERT INTO new_models (model_name, gender, age, images, videos, pdf_url) 
             VALUES (?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
