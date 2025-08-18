@@ -345,6 +345,9 @@ require './uploadmodel.php';
     </style>
 </head>
 <body>
+    <?php 
+    include './sidenavbar.php';
+    ?>
     <div class="container">
         <h1>🎭 Model Management System</h1>
         
