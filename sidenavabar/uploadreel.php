@@ -312,6 +312,9 @@
   </style>
 </head>
 <body>
+    <?php 
+    include 'config.php'
+    ?>
   <div class="container">
     <!-- Upload Form -->
     <div class="form-container">
