@@ -1,104 +1,203 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload Model Details</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-    }
-    .upload-container {
-      background: #fff;
-      margin: 30px;
-      padding: 30px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin: 10px 0 5px;
-      color: #555;
-    }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
-      font-size: 14px;
-    }
-    input[type="file"] {
-      padding: 5px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
-      background: #1a73e8;
-      color: white;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #155ab6;
-    }
-    .note {
-      font-size: 12px;
-      color: #888;
-      margin-top: -10px;
-      margin-bottom: 15px;
-    }
-  </style>
-</head>
-<body>
-  <div class="upload-container">
-    <h2>Upload Model Details</h2>
-    <form action="upload_model.php" method="POST" enctype="multipart/form-data">
-      
-      <label for="model_name">Model Name</label>
-      <input type="text" id="model_name" name="model_name" required>
+<?php
+require 'config.php';
+require 'vendor/autoload.php';
 
-      <label for="gender">Gender</label>
-      <select id="gender" name="gender" required>
-        <option value="">--Select Gender--</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
-      </select>
+use Cloudinary\Cloudinary;
 
-      <label for="age">Age</label>
-      <input type="number" id="age" name="age" min="1" required>
+// Initialize Cloudinary
+$cloudinary = new Cloudinary([
+    'cloud' => [
+        'cloud_name' => CLOUDINARY_CLOUD_NAME,
+        'api_key'    => CLOUDINARY_API_KEY,
+        'api_secret' => CLOUDINARY_API_SECRET,
+    ]
+]);
 
-      <label for="images">Upload Images (1–10)</label>
-      <input type="file" id="images" name="images[]" accept="image/*" multiple required>
-      <p class="note">You can upload up to 10 images.</p>
+$conn = getDbConnection();
 
-      <label for="videos">Upload Videos (1–10)</label>
-      <input type="file" id="videos" name="videos[]" accept="video/*" multiple>
-      <p class="note">You can upload up to 10 videos.</p>
+class ModelHandler {
+    private $conn;
+    private $cloudinary;
+    
+    public function __construct($conn, $cloudinary) {
+        $this->conn = $conn;
+        $this->cloudinary = $cloudinary;
+    }
+    
+    public function getAllModels() {
+        $result = $this->conn->query("SELECT * FROM new_models ORDER BY id DESC");
+        $models = [];
+        
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $row['images'] = !empty($row['images']) ? json_decode($row['images'], true) : [];
+                $row['videos'] = !empty($row['videos']) ? json_decode($row['videos'], true) : [];
+                $models[] = $row;
+            }
+        }
+        
+        return $models;
+    }
+    
+    public function uploadModel($data, $files) {
+        try {
+            $model_name = $this->conn->real_escape_string($data['model_name']);
+            $gender = $this->conn->real_escape_string($data['gender']);
+            $age = intval($data['age']);
 
-      <label for="pdf">Upload PDF</label>
-      <input type="file" id="pdf" name="pdf" accept="application/pdf">
+            $imageUrls = [];
+            $videoUrls = [];
+            $pdfUrl = null;
 
-      <button type="submit">Upload</button>
-    </form>
-  </div>
-</body>
-</html>
+            // Upload Images
+            if (!empty($files['images']['name'][0])) {
+                foreach ($files['images']['tmp_name'] as $key => $tmp_name) {
+                    if ($files['images']['error'][$key] === UPLOAD_ERR_OK) {
+                        $uploadResult = $this->cloudinary->uploadApi()->upload($tmp_name, [
+                            'folder' => 'models/images'
+                        ]);
+                        $imageUrls[] = $uploadResult['secure_url'];
+                    }
+                }
+            }
+
+            // Upload Videos
+            if (!empty($files['videos']['name'][0])) {
+                foreach ($files['videos']['tmp_name'] as $key => $tmp_name) {
+                    if ($files['videos']['error'][$key] === UPLOAD_ERR_OK) {
+                        $uploadResult = $this->cloudinary->uploadApi()->upload($tmp_name, [
+                            'resource_type' => 'video',
+                            'folder' => 'models/videos'
+                        ]);
+                        $videoUrls[] = $uploadResult['secure_url'];
+                    }
+                }
+            }
+
+            // Upload PDF
+            if (!empty($files['pdf']['name'])) {
+                if ($files['pdf']['error'] === UPLOAD_ERR_OK) {
+                    $uploadResult = $this->cloudinary->uploadApi()->upload($files['pdf']['tmp_name'], [
+                        'resource_type' => 'raw',
+                        'folder' => 'models/pdf'
+                    ]);
+                    $pdfUrl = $uploadResult['secure_url'];
+                }
+            }
+
+            // Save in DB
+            $sql = "INSERT INTO new_models (model_name, gender, age, images, videos, pdf_url) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param(
+                "ssisss",
+                $model_name,
+                $gender,
+                $age,
+                json_encode($imageUrls),
+                json_encode($videoUrls),
+                $pdfUrl
+            );
+            
+            if ($stmt->execute()) {
+                $stmt->close();
+                return ['success' => true, 'message' => 'Model uploaded successfully!'];
+            } else {
+                throw new Exception('Failed to save to database');
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Upload failed: ' . $e->getMessage()];
+        }
+    }
+    
+    public function deleteModel($id) {
+        try {
+            $id = intval($id);
+            
+            // Fetch record
+            $res = $this->conn->query("SELECT images, videos, pdf_url FROM new_models WHERE id=$id");
+            if ($res && $res->num_rows > 0) {
+                $row = $res->fetch_assoc();
+
+                // Delete images from Cloudinary
+                if (!empty($row['images'])) {
+                    $images = json_decode($row['images'], true);
+                    foreach ($images as $imgUrl) {
+                        $publicId = pathinfo(parse_url($imgUrl, PHP_URL_PATH), PATHINFO_FILENAME);
+                        try {
+                            $this->cloudinary->uploadApi()->destroy("models/images/$publicId", ["resource_type" => "image"]);
+                        } catch (Exception $e) {
+                            // Continue with deletion even if Cloudinary deletion fails
+                        }
+                    }
+                }
+
+                // Delete videos from Cloudinary
+                if (!empty($row['videos'])) {
+                    $videos = json_decode($row['videos'], true);
+                    foreach ($videos as $vidUrl) {
+                        $publicId = pathinfo(parse_url($vidUrl, PHP_URL_PATH), PATHINFO_FILENAME);
+                        try {
+                            $this->cloudinary->uploadApi()->destroy("models/videos/$publicId", ["resource_type" => "video"]);
+                        } catch (Exception $e) {
+                            // Continue with deletion even if Cloudinary deletion fails
+                        }
+                    }
+                }
+
+                // Delete PDF from Cloudinary
+                if (!empty($row['pdf_url'])) {
+                    $publicId = pathinfo(parse_url($row['pdf_url'], PHP_URL_PATH), PATHINFO_FILENAME);
+                    try {
+                        $this->cloudinary->uploadApi()->destroy("models/pdf/$publicId", ["resource_type" => "raw"]);
+                    } catch (Exception $e) {
+                        // Continue with deletion even if Cloudinary deletion fails
+                    }
+                }
+
+                // Delete DB record
+                if ($this->conn->query("DELETE FROM new_models WHERE id=$id")) {
+                    return ['success' => true, 'message' => 'Model deleted successfully!'];
+                } else {
+                    throw new Exception('Failed to delete from database');
+                }
+            } else {
+                return ['success' => false, 'message' => 'Model not found'];
+            }
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()];
+        }
+    }
+}
+
+// Create handler instance
+$handler = new ModelHandler($conn, $cloudinary);
+
+// Process form submissions and actions
+$message = '';
+$messageType = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['model_name'])) {
+    $result = $handler->uploadModel($_POST, $_FILES);
+    $message = $result['message'];
+    $messageType = $result['success'] ? 'success' : 'error';
+}
+
+if (isset($_GET['delete'])) {
+    $result = $handler->deleteModel($_GET['delete']);
+    $message = $result['message'];
+    $messageType = $result['success'] ? 'success' : 'error';
+    
+    // Redirect to avoid resubmission
+    header("Location: index.php?msg=" . urlencode($message) . "&type=" . $messageType);
+    exit;
+}
+
+// Check for redirect messages
+if (isset($_GET['msg'])) {
+    $message = $_GET['msg'];
+    $messageType = $_GET['type'] ?? 'success';
+}
+
+// Get all models
+$models = $handler->getAllModels();
+?>
