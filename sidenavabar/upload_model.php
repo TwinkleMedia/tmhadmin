@@ -200,6 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['model_name'])) {
   </style>
 </head>
 <body>
+    <?php include './sidenavbar.php'; ?>
   <div class="upload-container">
     <h2>Upload Model Details</h2>
     <form action="" method="POST" enctype="multipart/form-data">
