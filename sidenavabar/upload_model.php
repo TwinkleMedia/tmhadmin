@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     );
 
     if ($stmt->execute()) {
-        echo "<script>alert('Model uploaded successfully!'); window.location.href='model_upload.html';</script>";
+        echo "<script>alert('Model uploaded successfully!'); window.location.href='uploadmodel.php';</script>";
     } else {
         echo "Error: " . $stmt->error;
     }
