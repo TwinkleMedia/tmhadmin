@@ -109,14 +109,40 @@
       justify-content: center;
     }
 
-    .form-group button:hover {
+    .form-group button:hover:not(:disabled) {
       background-color: var(--secondary-color);
       transform: translateY(-2px);
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
+    .form-group button:disabled {
+      background-color: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .form-group button i {
       margin-right: 10px;
+    }
+
+    /* Alert styles */
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .alert-success {
+      background-color: #c6f6d5;
+      color: #2f855a;
+      border: 1px solid #9ae6b4;
+    }
+
+    .alert-error {
+      background-color: #fed7d7;
+      color: #c53030;
+      border: 1px solid #feb2b2;
     }
 
     /* Uploaded Reels Table Styles */
@@ -290,17 +316,20 @@
     <!-- Upload Form -->
     <div class="form-container">
       <h2><i class="fas fa-cloud-upload-alt"></i>Upload Reel Video</h2>
-      <form>
+      
+      <div id="alert" class="alert"></div>
+      
+      <form id="uploadForm" enctype="multipart/form-data">
         <div class="form-group">
           <label for="reel_title"><i class="fas fa-heading"></i>Reel Title</label>
-          <input type="text" id="reel_title" placeholder="Enter reel title" required>
+          <input type="text" id="reel_title" name="reel_title" placeholder="Enter reel title" required>
         </div>
         <div class="form-group">
           <label for="reel_video"><i class="fas fa-video"></i>Reel Video</label>
-          <input type="file" id="reel_video" accept="video/*" required>
+          <input type="file" id="reel_video" name="reel_video" accept="video/*" required>
         </div>
         <div class="form-group">
-          <button type="button" onclick="addReel()">
+          <button type="submit" id="uploadBtn">
             <i class="fas fa-upload"></i>Upload
           </button>
         </div>
@@ -327,31 +356,77 @@
   </div>
 
   <script>
-    let reelId = 1;
+    let reelCounter = 1;
 
-    function addReel() {
-      const title = document.getElementById("reel_title").value;
-      const videoInput = document.getElementById("reel_video");
-      const file = videoInput.files[0];
-
-      if (!title || !file) {
-        alert("Please enter a title and select a video.");
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData();
+      const title = document.getElementById('reel_title').value;
+      const videoFile = document.getElementById('reel_video').files[0];
+      
+      if (!title || !videoFile) {
+        showAlert('Please enter a title and select a video.', 'error');
         return;
       }
+      
+      formData.append('reel_title', title);
+      formData.append('reel_video', videoFile);
+      
+      // Disable submit button
+      const uploadBtn = document.getElementById('uploadBtn');
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Uploading...';
+      
+      fetch('reelupload.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showAlert(data.message, 'success');
+          addReelToTable(data.reel_id, title, videoFile.name, data.video_url);
+          document.getElementById('uploadForm').reset();
+        } else {
+          showAlert(data.message, 'error');
+        }
+      })
+      .catch(error => {
+        showAlert('Upload failed: ' + error.message, 'error');
+      })
+      .finally(() => {
+        // Re-enable submit button
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-upload"></i>Upload';
+      });
+    });
 
-      const table = document.getElementById("reelsTable").querySelector("tbody");
+    function showAlert(message, type) {
+      const alert = document.getElementById('alert');
+      alert.className = `alert alert-${type}`;
+      alert.textContent = message;
+      alert.style.display = 'block';
+      
+      setTimeout(() => {
+        alert.style.display = 'none';
+      }, 5000);
+    }
+
+    function addReelToTable(id, title, fileName, videoUrl) {
+      const table = document.getElementById('reelsTable').querySelector('tbody');
       if (table.rows.length === 1 && table.rows[0].cells[0].colSpan === 5) {
-        table.innerHTML = ""; // remove "no reels" row
+        table.innerHTML = ''; // remove "no reels" row
       }
 
       const row = table.insertRow();
       row.innerHTML = `
-        <td data-label="ID">${reelId++}</td>
+        <td data-label="ID">${id}</td>
         <td data-label="Title">${title}</td>
-        <td data-label="Video Path">${file.name}</td>
+        <td data-label="Video Path">${fileName}</td>
         <td data-label="Preview">
           <video class="video-preview" controls>
-            <source src="${URL.createObjectURL(file)}" type="${file.type}">
+            <source src="${videoUrl}" type="video/mp4">
             Your browser does not support the video tag.
           </video>
         </td>
@@ -361,16 +436,12 @@
           </button>
         </td>
       `;
-
-      // reset form
-      document.getElementById("reel_title").value = "";
-      videoInput.value = "";
     }
 
     function deleteReel(btn) {
-      const row = btn.closest("tr");
+      const row = btn.closest('tr');
       row.remove();
-      const table = document.getElementById("reelsTable").querySelector("tbody");
+      const table = document.getElementById('reelsTable').querySelector('tbody');
       if (table.rows.length === 0) {
         table.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;">No reels uploaded yet.</td></tr>`;
       }
