@@ -144,6 +144,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['model_name'])) {
     a {color: #1a73e8; text-decoration: none;}
     a:hover {text-decoration: underline;}
     .delete-btn {padding: 5px 10px; background: red; color: white; border-radius: 5px; text-decoration: none;}
+    
+    .upload-container {
+      background: #fff;
+      margin: 30px;
+      padding: 30px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 10px 0 5px;
+      color: #555;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    input[type="file"] {
+      padding: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #1a73e8;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #155ab6;
+    }
+    .note {
+      font-size: 12px;
+      color: #888;
+      margin-top: -10px;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
