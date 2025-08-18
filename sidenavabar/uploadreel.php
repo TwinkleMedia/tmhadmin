@@ -24,6 +24,8 @@
       --background-color: #f7fafc;
       --text-color: #2d3748;
       --white: #ffffff;
+      --success-color: #38a169;
+      --error-color: #e53e3e;
     }
 
     body {
@@ -131,6 +133,7 @@
       margin-bottom: 20px;
       border-radius: 8px;
       display: none;
+      position: relative;
     }
 
     .alert-success {
@@ -145,12 +148,46 @@
       border: 1px solid #feb2b2;
     }
 
+    /* Loading spinner */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: var(--primary-color);
+    }
+
+    .loading i {
+      font-size: 2em;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     /* Uploaded Reels Table Styles */
     .table-container {
       background: var(--white);
       border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
       overflow-x: auto;
+    }
+
+    .table-header {
+      padding: 20px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table-header h3 {
+      color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+    }
+
+    .table-header h3 i {
+      margin-right: 10px;
+      color: var(--primary-color);
     }
 
     .uploaded-reels-table {
@@ -183,11 +220,12 @@
 
     .uploaded-reels-table .video-preview {
       max-width: 200px;
+      max-height: 150px;
       border-radius: 8px;
     }
 
     .delete-btn {
-      background-color: #e53e3e;
+      background-color: var(--error-color);
       color: var(--white);
       border: none;
       padding: 8px 15px;
@@ -195,15 +233,35 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
+      font-size: 14px;
     }
 
-    .delete-btn:hover {
+    .delete-btn:hover:not(:disabled) {
       background-color: #c53030;
+      transform: translateY(-1px);
+    }
+
+    .delete-btn:disabled {
+      background-color: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .delete-btn i {
       margin-right: 5px;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      color: #718096;
+    }
+
+    .no-data i {
+      font-size: 3em;
+      margin-bottom: 15px;
+      opacity: 0.5;
     }
 
     /* Responsive */
@@ -221,30 +279,6 @@
         margin-bottom: 15px;
       }
 
-      .form-group {
-        margin-bottom: 15px;
-      }
-
-      .form-group label {
-        font-size: 14px;
-        margin-bottom: 5px;
-      }
-
-      .form-group input {
-        font-size: 14px;
-        padding: 10px;
-      }
-
-      .form-group button {
-        font-size: 14px;
-        padding: 12px;
-      }
-
-      .uploaded-reels-table {
-        font-size: 12px;
-        width: 100%;
-      }
-
       .uploaded-reels-table thead {
         display: none;
       }
@@ -255,23 +289,27 @@
         border: 1px solid #e2e8f0;
         border-radius: 8px;
         overflow: hidden;
+        background: var(--white);
       }
 
       .uploaded-reels-table td {
         display: block;
         text-align: right;
         border-bottom: 1px solid #e2e8f0;
-        padding: 10px;
+        padding: 10px 15px;
         position: relative;
+        min-height: 40px;
       }
 
       .uploaded-reels-table td:before {
         content: attr(data-label);
         position: absolute;
-        left: 10px;
+        left: 15px;
+        top: 10px;
         font-weight: bold;
         text-transform: uppercase;
-        font-size: 10px;
+        font-size: 12px;
+        color: var(--secondary-color);
       }
 
       .uploaded-reels-table td:last-child {
@@ -290,31 +328,14 @@
         justify-content: center;
       }
     }
-
-    @media screen and (max-width: 480px) {
-      body {
-        padding: 10px;
-      }
-
-      .form-container h2 {
-        font-size: 18px;
-      }
-
-      .form-container h2 i {
-        margin-right: 10px;
-      }
-
-      .uploaded-reels-table td,
-      .uploaded-reels-table td:before {
-        font-size: 12px;
-      }
-    }
   </style>
 </head>
 <body>
-      <?php
-    include './sidenavbar.php';
-    ?>
+  <?php
+    // Uncomment the line below if you have a side navigation
+    // include './sidenavbar.php';
+  ?>
+  
   <div class="container">
     <!-- Upload Form -->
     <div class="form-container">
@@ -324,11 +345,11 @@
       
       <form id="uploadForm" enctype="multipart/form-data">
         <div class="form-group">
-          <label for="reel_title"><i class="fas fa-heading"></i>Reel Title</label>
+          <label for="reel_title"><i class="fas fa-heading"></i> Reel Title</label>
           <input type="text" id="reel_title" name="reel_title" placeholder="Enter reel title" required>
         </div>
         <div class="form-group">
-          <label for="reel_video"><i class="fas fa-video"></i>Reel Video</label>
+          <label for="reel_video"><i class="fas fa-video"></i> Reel Video</label>
           <input type="file" id="reel_video" name="reel_video" accept="video/*" required>
         </div>
         <div class="form-group">
@@ -341,35 +362,58 @@
 
     <!-- Uploaded Reels Table -->
     <div class="table-container">
-      <table class="uploaded-reels-table" id="reelsTable">
+      <div class="table-header">
+        <h3><i class="fas fa-film"></i>Uploaded Reels</h3>
+      </div>
+      
+      <div id="loadingReels" class="loading">
+        <i class="fas fa-spinner"></i>
+        <p>Loading reels...</p>
+      </div>
+      
+      <table class="uploaded-reels-table" id="reelsTable" style="display: none;">
         <thead>
           <tr>
             <th>ID</th>
             <th>Title</th>
-            <th>Video Path</th>
             <th>Preview</th>
+            <th>Upload Date</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="5" style="text-align:center;padding:20px;">No reels uploaded yet.</td></tr>
         </tbody>
       </table>
+      
+      <div id="noReelsMessage" class="no-data" style="display: none;">
+        <i class="fas fa-film"></i>
+        <p>No reels uploaded yet. Upload your first reel above!</p>
+      </div>
     </div>
   </div>
 
   <script>
-    let reelCounter = 1;
+    // Load reels on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadReels();
+    });
 
+    // Upload form handler
     document.getElementById('uploadForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
       const formData = new FormData();
-      const title = document.getElementById('reel_title').value;
+      const title = document.getElementById('reel_title').value.trim();
       const videoFile = document.getElementById('reel_video').files[0];
       
       if (!title || !videoFile) {
         showAlert('Please enter a title and select a video.', 'error');
+        return;
+      }
+      
+      // Check file size (limit to 100MB)
+      if (videoFile.size > 100 * 1024 * 1024) {
+        showAlert('Video file is too large. Maximum size is 100MB.', 'error');
         return;
       }
       
@@ -389,8 +433,8 @@
       .then(data => {
         if (data.success) {
           showAlert(data.message, 'success');
-          addReelToTable(data.reel_id, title, videoFile.name, data.video_url);
           document.getElementById('uploadForm').reset();
+          loadReels(); // Reload the reels table
         } else {
           showAlert(data.message, 'error');
         }
@@ -405,49 +449,121 @@
       });
     });
 
+    // Load reels from database
+    function loadReels() {
+      const loadingDiv = document.getElementById('loadingReels');
+      const tableDiv = document.getElementById('reelsTable');
+      const noReelsDiv = document.getElementById('noReelsMessage');
+      
+      loadingDiv.style.display = 'block';
+      tableDiv.style.display = 'none';
+      noReelsDiv.style.display = 'none';
+      
+      fetch('fetch_reels.php')
+        .then(response => response.json())
+        .then(data => {
+          loadingDiv.style.display = 'none';
+          
+          if (data.success && data.reels.length > 0) {
+            populateReelsTable(data.reels);
+            tableDiv.style.display = 'table';
+          } else {
+            noReelsDiv.style.display = 'block';
+          }
+        })
+        .catch(error => {
+          loadingDiv.style.display = 'none';
+          showAlert('Failed to load reels: ' + error.message, 'error');
+          noReelsDiv.style.display = 'block';
+        });
+    }
+
+    // Populate reels table
+    function populateReelsTable(reels) {
+      const tbody = document.querySelector('#reelsTable tbody');
+      tbody.innerHTML = '';
+      
+      reels.forEach(reel => {
+        const row = tbody.insertRow();
+        const uploadDate = new Date(reel.created_at).toLocaleDateString();
+        
+        row.innerHTML = `
+          <td data-label="ID">${reel.id}</td>
+          <td data-label="Title">${escapeHtml(reel.title)}</td>
+          <td data-label="Preview">
+            <video class="video-preview" controls preload="metadata">
+              <source src="${reel.video_url}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </td>
+          <td data-label="Upload Date">${uploadDate}</td>
+          <td data-label="Actions">
+            <button class="delete-btn" onclick="deleteReel(${reel.id}, this)">
+              <i class="fas fa-trash"></i>Delete
+            </button>
+          </td>
+        `;
+      });
+    }
+
+    // Delete reel function
+    function deleteReel(reelId, btnElement) {
+      if (!confirm('Are you sure you want to delete this reel? This action cannot be undone.')) {
+        return;
+      }
+      
+      // Disable button
+      btnElement.disabled = true;
+      btnElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Deleting...';
+      
+      fetch('delete_reel.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: reelId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showAlert(data.message, 'success');
+          loadReels(); // Reload the table
+        } else {
+          showAlert(data.message, 'error');
+          // Re-enable button on error
+          btnElement.disabled = false;
+          btnElement.innerHTML = '<i class="fas fa-trash"></i>Delete';
+        }
+      })
+      .catch(error => {
+        showAlert('Delete failed: ' + error.message, 'error');
+        // Re-enable button on error
+        btnElement.disabled = false;
+        btnElement.innerHTML = '<i class="fas fa-trash"></i>Delete';
+      });
+    }
+
+    // Show alert function
     function showAlert(message, type) {
       const alert = document.getElementById('alert');
       alert.className = `alert alert-${type}`;
       alert.textContent = message;
       alert.style.display = 'block';
       
+      // Auto-hide after 5 seconds
       setTimeout(() => {
         alert.style.display = 'none';
       }, 5000);
+      
+      // Scroll to alert
+      alert.scrollIntoView({ behavior: 'smooth' });
     }
 
-    function addReelToTable(id, title, fileName, videoUrl) {
-      const table = document.getElementById('reelsTable').querySelector('tbody');
-      if (table.rows.length === 1 && table.rows[0].cells[0].colSpan === 5) {
-        table.innerHTML = ''; // remove "no reels" row
-      }
-
-      const row = table.insertRow();
-      row.innerHTML = `
-        <td data-label="ID">${id}</td>
-        <td data-label="Title">${title}</td>
-        <td data-label="Video Path">${fileName}</td>
-        <td data-label="Preview">
-          <video class="video-preview" controls>
-            <source src="${videoUrl}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        </td>
-        <td data-label="Actions">
-          <button class="delete-btn" onclick="deleteReel(this)">
-            <i class="fas fa-trash"></i>Delete
-          </button>
-        </td>
-      `;
-    }
-
-    function deleteReel(btn) {
-      const row = btn.closest('tr');
-      row.remove();
-      const table = document.getElementById('reelsTable').querySelector('tbody');
-      if (table.rows.length === 0) {
-        table.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;">No reels uploaded yet.</td></tr>`;
-      }
+    // Escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
   </script>
 </body>
