@@ -6,9 +6,9 @@ define('DB_PASSWORD', 'Deep@0118');
 define('DB_NAME', 'u694280384_twinkleadmin');
 
 // Cloudinary configuration
-define('CLOUDINARY_CLOUD_NAME', 'dh9dpvul4');
-define('CLOUDINARY_API_KEY', '913163688842134');
-define('CLOUDINARY_API_SECRET', 'FR5RjEj7it70xfBMnT53mgW-uds');
+define('CLOUDINARY_CLOUD_NAME', 'doe3ms4zs');
+define('CLOUDINARY_API_KEY', '299873369678814');
+define('CLOUDINARY_API_SECRET', 'I0ulV-BnLSUk5CCF9mn0bRcNF4k');
 // Database connection
 function getDbConnection() {
     $conn = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
