@@ -78,9 +78,9 @@ function deleteFromCloudinary($cloudinary, $url, $resourceType) {
 // Cloudinary config
 $cloudinary = new Cloudinary([
     'cloud' => [
-        'cloud_name' => 'dh9dpvul4',
-        'api_key'    => '913163688842134',
-        'api_secret' => 'FR5RjEj7it70xfBMnT53mgW-uds',
+        'cloud_name' => 'doe3ms4zs',
+        'api_key'    => '299873369678814',
+        'api_secret' => 'I0ulV-BnLSUk5CCF9mn0bRcNF4k',
     ],
     'url' => ['secure' => true]
 ]);
